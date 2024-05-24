@@ -8,11 +8,11 @@ import (
 )
 
 func main() {
-	fmt.Fprint(os.Stdout, "$ ")
 
 	// Wait for user input
 	stdin := bufio.NewReader(os.Stdin)
 	for {
+		fmt.Fprint(os.Stdout, "$ ")
 		input, err := stdin.ReadString('\n')
 		if err != nil {
 			fmt.Println(err)
