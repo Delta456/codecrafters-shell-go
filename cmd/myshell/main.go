@@ -19,22 +19,24 @@ func main() {
 			fmt.Println(err)
 			return
 		}
-		if strings.HasPrefix(input, "exit") {
+
+		input = strings.TrimSpace(input)
+		switch {
+		case strings.HasPrefix(input, "exit"):
 			exitCmd(input)
+		case strings.HasPrefix(input, "echo"):
+			echoCmd(input)
+		default:
+			cmdNotFound(input)
 		}
-		cmdNotFound(input)
 	}
 }
 
 func cmdNotFound(cmd string) {
-	// Trim spaces because the line endings are still CRLF.
-	cmd = strings.TrimSpace(cmd)
 	fmt.Printf("%s: command not found\n", cmd)
 }
 
 func exitCmd(cmd string) {
-	// Trim spaces because the line endings are still CRLF.
-	cmd = strings.TrimSpace(cmd)
 	parser := strings.SplitN(cmd, " ", 2)
 
 	exitCode, err := strconv.ParseInt(parser[1], 10, 64)
@@ -43,4 +45,11 @@ func exitCmd(cmd string) {
 		return
 	}
 	os.Exit(int(exitCode))
+}
+
+func echoCmd(cmd string) {
+	_, print, flag := strings.Cut(cmd, "echo")
+	if flag {
+		fmt.Println(print)
+	}
 }
