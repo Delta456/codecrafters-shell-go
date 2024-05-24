@@ -26,6 +26,8 @@ func main() {
 			exitCmd(input)
 		case strings.HasPrefix(input, "echo"):
 			echoCmd(input)
+		case strings.HasPrefix(input, "type"):
+			typeCmd(input)
 		default:
 			cmdNotFound(input)
 		}
@@ -33,12 +35,11 @@ func main() {
 }
 
 func cmdNotFound(cmd string) {
-	fmt.Printf("%s: command not found\n", cmd)
+	fmt.Printf("%s: not found\n", cmd)
 }
 
 func exitCmd(cmd string) {
 	parser := strings.SplitN(cmd, " ", 2)
-
 	exitCode, err := strconv.ParseInt(parser[1], 10, 64)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
@@ -51,5 +52,18 @@ func echoCmd(cmd string) {
 	_, print, flag := strings.Cut(cmd, "echo")
 	if flag {
 		fmt.Println(print)
+	}
+}
+
+func typeCmd(cmd string) {
+	parser := strings.SplitN(cmd, " ", 2)
+	introspectCmd := strings.TrimSpace(parser[1])
+
+	switch introspectCmd {
+	case "echo", "exit", "type":
+		fmt.Printf("%s is a shell builtin\n", introspectCmd)
+	default:
+		cmdNotFound(introspectCmd)
+
 	}
 }
