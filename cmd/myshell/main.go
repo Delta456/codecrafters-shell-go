@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 )
@@ -63,7 +64,23 @@ func typeCmd(cmd string) {
 	case "echo", "exit", "type":
 		fmt.Printf("%s is a shell builtin\n", introspectCmd)
 	default:
-		cmdNotFound(introspectCmd)
-
+		if path, ok := cmdinPath(introspectCmd); ok {
+			fmt.Printf("%s is %s\n", introspectCmd, path)
+		} else {
+			cmdNotFound(introspectCmd)
+		}
 	}
+}
+
+func cmdinPath(cmd string) (string, bool) {
+	env := os.Getenv("PATH")
+	pathEnvVars := strings.Split(env, ":")
+
+	for _, path := range pathEnvVars {
+		if _, err := os.Stat(filepath.Join(path, cmd)); err == nil {
+			return filepath.Join(path, cmd), true
+		}
+	}
+	return "", false
+
 }
