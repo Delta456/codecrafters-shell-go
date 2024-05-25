@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -17,7 +18,7 @@ func main() {
 		fmt.Fprint(os.Stdout, "$ ")
 		input, err := stdin.ReadString('\n')
 		if err != nil {
-			fmt.Println(err)
+			fmt.Fprintln(os.Stderr, err)
 			return
 		}
 
@@ -30,7 +31,7 @@ func main() {
 		case strings.HasPrefix(input, "type"):
 			typeCmd(input)
 		default:
-			cmdNotFound(input)
+			execCmd(input)
 		}
 	}
 }
@@ -41,6 +42,10 @@ func cmdNotFound(cmd string) {
 
 func exitCmd(cmd string) {
 	parser := strings.SplitN(cmd, " ", 2)
+	if len(parser) == 1 {
+		os.Exit(0)
+	}
+
 	exitCode, err := strconv.ParseInt(parser[1], 10, 64)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
@@ -82,5 +87,20 @@ func cmdinPath(cmd string) (string, bool) {
 		}
 	}
 	return "", false
+
+}
+
+func execCmd(cmd string) {
+	cmds := strings.Split(cmd, " ")
+	execCmd := exec.Command(cmds[0], cmds[1:]...)
+
+	execCmd.Stderr = os.Stderr
+	execCmd.Stdin = os.Stdin
+	execCmd.Stdout = os.Stdout
+
+	err := execCmd.Run()
+	if err != nil {
+		cmdNotFound(cmds[0])
+	}
 
 }
