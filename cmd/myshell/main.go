@@ -120,6 +120,11 @@ func cdCmd(cmd string) {
 	parser := strings.SplitN(cmd, " ", 2)
 	introspectDir := strings.TrimSpace(parser[1])
 
+	// Redirect to $HOME when dir is ~
+	if introspectDir == "~" {
+		introspectDir = os.Getenv("HOME")
+	}
+
 	err := os.Chdir(introspectDir)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "cd: %s: No such file or directory\n", introspectDir)
