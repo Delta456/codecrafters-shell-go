@@ -31,6 +31,8 @@ func main() {
 			typeCmd(input)
 		case strings.HasPrefix(input, "pwd"):
 			pwdCmd(input)
+		case strings.HasPrefix(input, "cd"):
+			cdCmd(input)
 		default:
 			execCmd(input)
 		}
@@ -38,7 +40,7 @@ func main() {
 }
 
 func cmdNotFound(cmd string) {
-	fmt.Printf("%s: not found\n", cmd)
+	fmt.Fprintf(os.Stderr, "%s: not found\n", cmd)
 }
 
 func exitCmd(cmd string) {
@@ -112,4 +114,14 @@ func pwdCmd(_ string) {
 		fmt.Fprintf(os.Stderr, "invalid dir")
 	}
 	fmt.Println(dir)
+}
+
+func cdCmd(cmd string) {
+	parser := strings.SplitN(cmd, " ", 2)
+	introspectDir := strings.TrimSpace(parser[1])
+
+	err := os.Chdir(introspectDir)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "cd: %s: No such file or directory\n", introspectDir)
+	}
 }
