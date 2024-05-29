@@ -12,7 +12,6 @@ import (
 
 func main() {
 
-	// Wait for user input
 	stdin := bufio.NewReader(os.Stdin)
 	for {
 		fmt.Fprint(os.Stdout, "$ ")
@@ -30,6 +29,8 @@ func main() {
 			echoCmd(input)
 		case strings.HasPrefix(input, "type"):
 			typeCmd(input)
+		case strings.HasPrefix(input, "pwd"):
+			pwdCmd(input)
 		default:
 			execCmd(input)
 		}
@@ -103,4 +104,12 @@ func execCmd(cmd string) {
 		cmdNotFound(cmds[0])
 	}
 
+}
+
+func pwdCmd(_ string) {
+	dir, err := os.Getwd()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "invalid dir")
+	}
+	fmt.Println(dir)
 }
