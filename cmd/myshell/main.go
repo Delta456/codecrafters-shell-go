@@ -59,6 +59,7 @@ func exitCmd(cmd string) {
 
 func echoCmd(cmd string) {
 	_, print, flag := strings.Cut(cmd, "echo")
+	print = strings.TrimSpace(print)
 	if flag {
 		fmt.Println(print)
 	}
@@ -127,6 +128,6 @@ func cdCmd(cmd string) {
 
 	err := os.Chdir(introspectDir)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "cd: %s: No such file or directory\n", introspectDir)
+		fmt.Fprintf(os.Stderr, "%s: No such file or directory\n", introspectDir)
 	}
 }
